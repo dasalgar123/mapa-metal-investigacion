@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Mental Orgánico - Catálogo Digital Gardem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at 30% 20%, #ffecd2 0%, #fcb69f 50%, #a8caba 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #2c3e50;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .mind-map {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Nodo Central con forma orgánica */
+        .central-hub {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 280px;
+            height: 280px;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            border-radius: 50% 40% 60% 30%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(118, 75, 162, 0.3);
+            z-index: 10;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translate(-50%, -50%) rotate(0deg);
+                border-radius: 50% 40% 60% 30%;
+            }
+            25% { 
+                transform: translate(-50%, -50%) rotate(1deg);
+                border-radius: 40% 50% 30% 60%;
+            }
+            50% { 
+                transform: translate(-50%, -50%) rotate(0deg);
+                border-radius: 60% 30% 50% 40%;
+            }
+            75% { 
+                transform: translate(-50%, -50%) rotate(-1deg);
+                border-radius: 30% 60% 40% 50%;
+            }
+        }
+
+        /* Ramas con formas orgánicas */
+        .branch-node {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(255,255,255,0.3);
+            max-width: 320px;
+        }
+
+        .branch-node:hover {
+            transform: scale(1.1) rotate(2deg);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            border-color: rgba(255,255,255,0.8);
+        }
+
+        .branch-node h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .branch-node .content {
+            font-size: 12px;
+            color: #5a6c7d;
+            line-height: 1.5;
+        }
+
+        .branch-node ul {
+            list-style: none;
+            margin-top: 8px;
+        }
+
+        .branch-node li {
+            padding: 3px 0;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .branch-node li::before {
+            content: "•";
+            color: #667eea;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Posiciones específicas en círculo orgánico */
+        .problema {
+            top: 8%;
+            left: 25%;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(255, 255, 255, 0.95));
+            border-left: 4px solid #e74c3c;
+        }
+
+        .justificacion {
+            top: 12%;
+            right: 18%;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(255, 255, 255, 0.95));
+            border-left: 4px solid #3498db;
+        }
+
+        .objetivo-general {
+            right: 8%;
+            top: 45%;
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(255, 255, 255, 0.95));
+            border-left: 4px solid #27ae60;
+        }
+
+        .objetivos-especificos {
+            bottom: 12%;
+            right: 22%;
+            background: linear-gradient(135deg, rgba(243, 156, 18, 0.1), rgba(255, 255, 255, 0.95));
+            border-left: 4px solid #f39c12;
+        }
+
+        .antecedentes {
+            bottom: 8%;
+            left: 20%;
+            background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(255, 255, 255, 0.95));
+            border-left: 4px solid #9b59b6;
+        }
+
+        .metodologia {
+            left: 8%;
+            top: 45%;
+            background: linear-gradient(135deg, rgba(26, 188, 156, 0.1), rgba(255, 255, 255, 0.95));
+            border-left: 4px solid #1abc9c;
+        }
+
+        .poblacion {
+            bottom: 35%;
+            left: 15%;
+            background: linear-gradient(135deg, rgba(52, 73, 94, 0.1), rgba(255, 255, 255, 0.95));
+            border-left: 4px solid #34495e;
+        }
+
+        /* Conexiones orgánicas con SVG */
+        .connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .connection-line {
+            stroke: rgba(255, 255, 255, 0.6);
+            stroke-width: 3;
+            fill: none;
+            stroke-dasharray: 5,5;
+            animation: dash 20s linear infinite;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -200;
+            }
+        }
+
+        /* Partículas decorativas */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            animation: particle-float 15s infinite linear;
+        }
+
+        @keyframes particle-float {
+            0% {
+                transform: translateY(100vh) translateX(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Efectos de interacción */
+        .branch-node.active {
+            transform: scale(1.15) rotate(-2deg);
+            z-index: 20;
+        }
+
+        .icon {
+            font-size: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .central-hub {
+                width: 220px;
+                height: 220px;
+                font-size: 16px;
+            }
+            
+            .branch-node {
+                max-width: 280px;
+                padding: 15px;
+            }
+            
+            .title {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                overflow-x: auto;
+                overflow-y: auto;
+            }
+            
+            .mind-map {
+                min-width: 1000px;
+                min-height: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="title">🧠 Mapa Mental Orgánico: Catálogo Digital Gardem</div>
+    
+    <div class="mind-map">
+        <!-- Partículas decorativas -->
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: 3s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: 6s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: 9s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: 12s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: 15s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: 18s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: 21s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 24s;"></div>
+
+        <!-- Conexiones SVG -->
+        <svg class="connections" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path class="connection-line" d="M 50 50 Q 30 20 35 15" />
+            <path class="connection-line" d="M 50 50 Q 70 20 75 18" />
+            <path class="connection-line" d="M 50 50 Q 85 50 90 50" />
+            <path class="connection-line" d="M 50 50 Q 70 80 75 85" />
+            <path class="connection-line" d="M 50 50 Q 30 80 30 85" />
+            <path class="connection-line" d="M 50 50 Q 15 50 15 50" />
+            <path class="connection-line" d="M 50 50 Q 25 70 22 75" />
+        </svg>
+
+        <!-- Nodo Central -->
+        <div class="central-hub">
+            <div>
+                <div style="font-size: 24px; margin-bottom: 10px;">🌟</div>
+                <div>CATÁLOGO DIGITAL</div>
+                <div style="font-size: 22px; margin-top: 5px;">GARDEM</div>
+                <div style="font-size: 14px; opacity: 0.9; margin-top: 5px;">Transformación Digital</div>
+            </div>
+        </div>
+
+        <!-- Ramas -->
+        <div class="branch-node problema">
+            <h3><span class="icon">🎯</span> PROBLEMA</h3>
+            <div class="content">
+                <strong>Desafíos Críticos:</strong>
+                <ul>
+                    <li>Dependencia del mercado local</li>
+                    <li>Ausencia de presencia digital</li>
+                    <li>Sin estrategia e-commerce</li>
+                    <li>Limitaciones geográficas</li>
+                    <li>Competencia establecida</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="branch-node justificacion">
+            <h3><span class="icon">💡</span> JUSTIFICACIÓN</h3>
+            <div class="content">
+                <strong>Necesidad Digital:</strong>
+                <ul>
+                    <li>Presencia online 24/7</li>
+                    <li>Expansión geográfica</li>
+                    <li>Integración WhatsApp</li>
+                    <li>Mejora experiencia UX</li>
+                    <li>Competitividad futura</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="branch-node objetivo-general">
+            <h3><span class="icon">🚀</span> OBJETIVO GENERAL</h3>
+            <div class="content">
+                <strong>Meta Principal:</strong><br>
+                Desarrollar e implementar un catálogo digital interactivo para mejorar la presencia online y potenciar las oportunidades de venta de Gardem.
+            </div>
+        </div>
+
+        <div class="branch-node objetivos-especificos">
+            <h3><span class="icon">📋</span> OBJETIVOS ESPECÍFICOS</h3>
+            <div class="content">
+                <ul>
+                    <li><strong>Analizar</strong> requisitos funcionales</li>
+                    <li><strong>Diseñar</strong> UI/UX responsivo</li>
+                    <li><strong>Desarrollar</strong> plataforma con WhatsApp</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="branch-node antecedentes">
+            <h3><span class="icon">📚</span> ANTECEDENTES</h3>
+            <div class="content">
+                <strong>Referentes:</strong>
+                <ul>
+                    <li><strong>Nacionales:</strong> Arturo Calle, Pat Primo</li>
+                    <li><strong>Internacionales:</strong> Calvin Klein</li>
+                    <li>Transformación digital exitosa</li>
+                    <li>Estrategias e-commerce</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="branch-node metodologia">
+            <h3><span class="icon">🔬</span> METODOLOGÍA</h3>
+            <div class="content">
+                <strong>Proceso de Desarrollo:</strong>
+                <ul>
+                    <li>Análisis de requisitos</li>
+                    <li>Diseño de arquitectura</li>
+                    <li>Desarrollo tecnológico</li>
+                    <li>Implementación</li>
+                    <li>Pruebas y validación</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="branch-node poblacion">
+            <h3><span class="icon">👥</span> POBLACIÓN</h3>
+            <div class="content">
+                <strong>Grupos Objetivo:</strong>
+                <ul>
+                    <li>Clientes finales de Gardem</li>
+                    <li>Personal interno de gestión</li>
+                    <li>Sector: Ropa interior y deportiva</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Interactividad avanzada
+        document.querySelectorAll('.branch-node').forEach(node => {
+            node.addEventListener('mouseenter', function() {
+                this.classList.add('active');
+                // Efecto de ondas
+                this.style.boxShadow = '0 0 0 0 rgba(102, 126, 234, 0.4)';
+                setTimeout(() => {
+                    this.style.boxShadow = '0 0 0 20px rgba(102, 126, 234, 0)';
+                }, 100);
+            });
+            
+            node.addEventListener('mouseleave', function() {
+                this.classList.remove('active');
+            });
+            
+            node.addEventListener('click', function() {
+                // Efecto de pulso al hacer clic
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1.1) rotate(2deg)';
+                }, 100);
+            });
+        });
+
+        // Animación de entrada
+        window.addEventListener('load', function() {
+            const nodes = document.querySelectorAll('.branch-node');
+            nodes.forEach((node, index) => {
+                node.style.opacity = '0';
+                node.style.transform = 'scale(0.3) rotate(45deg)';
+                
+                setTimeout(() => {
+                    node.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    node.style.opacity = '1';
+                    node.style.transform = 'scale(1) rotate(0deg)';
+                }, index * 300 + 500);
+            });
+        });
+
+        // Efecto paralax suave en el movimiento del mouse
+        document.addEventListener('mousemove', function(e) {
+            const centralHub = document.querySelector('.central-hub');
+            const x = (e.clientX / window.innerWidth) * 10 - 5;
+            const y = (e.clientY / window.innerHeight) * 10 - 5;
+            
+            centralHub.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+        });
+    </script>
+</body>
+</html>
